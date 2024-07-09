@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Image Rotation</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Product+Sans&display=swap');
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  background-color: #333; /* Darker background */
+  transition: background 3s, opacity 1s;
+}
+
+.container {
+  position: relative;
+  perspective: 1000px;
+  z-index: 2; /* Ensure container is above other elements */
+}
+
+img {
+  width: 300px;
+  height: auto;
+  transition: transform 0.33s; /* Faster rotation animation */
+  cursor: pointer;
+}
+
+.rotate {
+  transform: rotateY(180deg); /* Changed rotation to 180deg */
+}
+
+.plus-one {
+  position: absolute;
+  font-size: 24px; /* Increased font size */
+  color: black; /* Changed to black */
+  font-family: 'Product Sans', sans-serif; /* Changed font to Product Sans */
+  opacity: 0.75; /* Set initial opacity to 75% */
+  transition: transform 0.35s, opacity 0.35s; /* Increased duration to 0.35s */
+  z-index: 3; /* Ensure +1 element is above other elements */
+}
+
+.count {
+  position: absolute;
+  top: calc(100% + 10px); /* Positioned below the image */
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 18px;
+  color: black; /* Changed to black */
+  font-family: 'Product Sans', sans-serif; /* Changed font to Product Sans */
+  z-index: 3; /* Ensure counter element is above other elements */
+}
+
+.fade {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #333; /* Matches body background */
+  opacity: 1; /* Initially opaque */
+  transition: opacity 0.33s; /* Fade out animation duration */
+  z-index: 1; /* Ensure fade element is behind other content */
+}
+
+@keyframes gradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.gradient {
+  background: linear-gradient(270deg, #654ea3, #eaafc8, #ff7e5f, #feb47b, #86a8e7, #91eae4);
+  background-size: 800% 800%;
+  opacity: 1; /* Always visible */
+  z-index: 2; /* Ensure gradient is above the fade element */
+}
+
+</style>
+</head>
+<body>
+<div class="container">
+  <img id="image" src="https://i.ibb.co/NLQ6wH5/IMG-20240709-103132-359-removebg-preview.png" alt="Image">
+  <div id="count" class="count">0</div> <!-- Counter element for total clicks -->
+</div>
+
+<div id="fade" class="fade"></div> <!-- Fade element -->
+
+<script>
+const image = document.getElementById('image');
+const count = document.getElementById('count');
+const fade = document.getElementById('fade');
+let clickCount = 0;
+let gradientApplied = false;
+
+image.addEventListener('click', (event) => {
+  image.classList.toggle('rotate');
+
+  // Increment click count and update counter text
+  clickCount++;
+  count.textContent = clickCount;
+
+  // Create +1 element
+  const plusOne = document.createElement('div');
+  plusOne.classList.add('plus-one');
+  plusOne.textContent = '+1';
+  document.body.appendChild(plusOne);
+
+  // Position the +1 element
+  const rect = image.getBoundingClientRect();
+  plusOne.style.left = `${event.clientX}px`;
+  plusOne.style.top = `${event.clientY}px`;
+
+  // Trigger animation for +1 element
+  requestAnimationFrame(() => {
+    plusOne.style.transform = 'translateY(-50px)';
+    plusOne.style.opacity = '0';
+  });
+
+  // Remove +1 element after animation
+  setTimeout(() => {
+    plusOne.remove();
+  }, 350); // Updated to match the transition duration
+
+  // Apply gradient background with animation only if not already applied
+  if (!gradientApplied) {
+    document.body.classList.add('gradient');
+    gradientApplied = true;
+    
+    // Fade out the fade element
+    fade.style.opacity = '0';
+    setTimeout(() => {
+      fade.remove();
+    }, 330); // Match the animation duration
+  }
+});
+</script>
+</body>
+</html>
